@@ -15,18 +15,15 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.bodymassindex.ui.theme.BodyMassIndexTheme
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,12 +43,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Bmi() {
-    var heightInput: String by remember { mutableStateOf("") }
-    var weightInput: String by remember { mutableStateOf("") }
-    val height = heightInput.toFloatOrNull()?.div(100) ?: 0.0f
-    val weight = weightInput.toFloatOrNull() ?: 0.0f
-    val bmi = if (weight > 0 && height > 0) weight / (height * height) else 0.0
+fun Bmi(appViewModel: AppViewModel = viewModel()) {
 
     Column(
         modifier = Modifier.padding(8.dp),
@@ -67,22 +59,22 @@ fun Bmi() {
                 .padding(top = 16.dp, bottom = 16.dp)
         )
         OutlinedTextField(
-            value = heightInput,
-            onValueChange = {heightInput = it.replace(',','.')},
+            value = appViewModel.heightInput,
+            onValueChange = {appViewModel.updateHeight(it.replace(',','.'))},
             label = { Text(stringResource(R.string.height))},
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
-            value = weightInput,
-            onValueChange = {weightInput = it.replace(',','.')},
+            value = appViewModel.weightInput,
+            onValueChange = {appViewModel.updateWeight(it.replace(',','.'))},
             label = { Text(stringResource(R.string.weight))},
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
-        Text(text = stringResource(R.string.result, String.format("%.2f",bmi).replace(',','.')))
+        Text(text = stringResource(R.string.result, String.format("%.2f",appViewModel.bmi).replace(',','.')))
     }
 }
 
